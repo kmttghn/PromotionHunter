@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
-from tesco import Tesco
+# from tesco import Tesco
+from tescoSel import Tesco #It does not work on a-shell environment as ChromeWebDriver is not accesible via the shell
 from sainsburys import Sainsburys
 from holland import Holland
 from waitrose import Waitrose
