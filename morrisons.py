@@ -38,7 +38,7 @@ class Morrisons():
     
     def textToFloat(self, text):
         if text:
-            extract = re.search(r"(\d+\.\d+)", text)
+            extract = re.search(r"(\d+\.?\d*)", text)
             return float(extract.group()) if extract else None
         return
     
@@ -90,7 +90,8 @@ if __name__ == "__main__":
         format="%(asctime)s %(message)s", datefmt="%Y/%m/%d %H:%M:%S"
     )
     morrisons = Morrisons()
-    print(morrisons.getProduct("aspall-raw-organic-apple-cyder-vinegar-431504011"))
+    # print(morrisons.getProduct("aspall-raw-organic-apple-cyder-vinegar-431504011"))
+    print(morrisons.getProduct("beavertown-neck-oil-session-ipa-621747011"))
     # print(morrisons.getProduct("kleenex-balsam-tissues-2-pack-372613011"))
 
 

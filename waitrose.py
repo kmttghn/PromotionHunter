@@ -42,7 +42,7 @@ class Waitrose():
     
     def textToFloat(self, text):
         if text:
-            extract = re.search(r"(\d+\.\d+)", text)
+            extract = re.search(r"(\d+\.?\d*)", text)
             return float(extract.group()) if extract else None
         return
     

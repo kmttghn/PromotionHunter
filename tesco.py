@@ -9,9 +9,11 @@ class Tesco:
         self.base_url = base_url
         self.session = requests.Session()
         self.session.headers.update(
-            {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            { #The alphabetical order of header items seem to avoid bot detection
+                "Accept": "text/html,application/xhtml+xml",
+                "Accept-Language": "en-GB",
                 "Referer": "https://www.tesco.com/",
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
             }
         )
         self.initCookie()
@@ -50,8 +52,8 @@ class Tesco:
         # print(response.request.headers)
         if response.content:
             data = response.content
-        print(response.request.__dict__)
-        print(response.__dict__)
+        # print(response.request.__dict__)
+        # print(response.__dict__)
 
         return data
 
@@ -68,7 +70,7 @@ class Tesco:
             ].decode(),
             "pow": int(i) + int(j),
         }
-        print(f"Payload: {payload}")
+        # print(f"Payload: {payload}")
 
         path = f"_sec/verify?provider=interstitial"
         response = self._request_wrapper("POST", path, payload)
@@ -76,7 +78,7 @@ class Tesco:
 
     def textToFloat(self, text):
         if text:
-            extract = re.search(r"(\d+\.\d+)", text)
+            extract = re.search(r"(\d+\.?\d*)", text)
             return float(extract.group()) if extract else None
         return
 
@@ -97,15 +99,16 @@ class Tesco:
         )
         unit_price = self.soupToText(soup.css.select_one("p[class*='Subtext']"))
         offer_price = self.textToFloat(
-            self.soupToText(soup.css.select_one("span[class*='OfferText']"))
+            self.soupToText(soup.css.select_one("div[class*='PromotionsContainer'] p[class*='ContentText']"))
         )
-        offer_term = self.soupToText(soup.css.select_one("p[class*='TermsMessage']"))
+        offer_unit_price = self.soupToText(soup.css.select_one("div[class*='PromotionsContainer'] p[class*='SubText']"))
+        offer_term = self.soupToText(soup.css.select_one("div[class*='PromotionsContainer'] p[class*='TermsText']"))
         item = {
             "title": title,
             "price": price,
             "unit_price": unit_price,
             "offer_price": offer_price,
-            "offer_unit_price": "",
+            "offer_unit_price": offer_unit_price,
             "offer_term": offer_term,
             "has_offer": True if offer_price else False,
         }
@@ -122,6 +125,6 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
     tesco = Tesco()
-    print(tesco.getProduct("297105301"))
-    # tesco.getProduct("313858318")
+    # print(tesco.getProduct("297105301"))
+    print(tesco.getProduct("311680104"))
     # tesco.getProduct("313855828")
