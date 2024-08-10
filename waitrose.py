@@ -2,14 +2,23 @@ import requests
 import logging
 import re
 from bs4 import BeautifulSoup
+import collections
 
 class Waitrose():
-    # https://www.waitrose.com/ecom/products/aspall-raw-organic-cyder-vinegar/626811-535366-535367
+    # https://www.waitrose.com/ecom/products/aspall-raw-organic-apple-cyder-vinegar/626811-535366-535367
     def __init__(self, base_url="https://www.waitrose.com/"):
         self.base_url = base_url
         self.session = requests.Session()
         # print(requests.utils.default_headers())
-        self.session.headers.update({"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"})
+        self.session.headers.update({
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Accept-Language": "en-GB,en;q=0.9",
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
+            })
+        self.session.headers = collections.OrderedDict(
+            ((key, value) for key, value in sorted(self.session.headers.items()))
+        )
 
     
     def _request_wrapper(self, method, path, body):
