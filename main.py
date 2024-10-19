@@ -12,7 +12,7 @@ import config
 def main():
     products = config.PRODUCTS
 
-    def sendReport(products):
+    def send_report(products):
         message = {"To":config.MESSAGE_TO, 
             "From": config.MESSAGE_FROM,
             "Subject":f"Promotion Hunter Report {datetime.today().strftime('%Y-%m-%d')}",
@@ -44,15 +44,15 @@ def main():
         for idx2,item in enumerate(product.get("items")):
             match item.get("store"):
                 case "Sainsburys":
-                    itemDetail = sains.getProduct(item.get("productId"))
+                    itemDetail = sains.get_product(item.get("productId"))
                 case "Tesco":
-                    itemDetail = tesco.getProduct(item.get("productId"))
+                    itemDetail = tesco.get_product(item.get("productId"))
                 case "Holland":
-                    itemDetail = holland.getProduct(item.get("productId"))
+                    itemDetail = holland.get_product(item.get("productId"))
                 case "Waitrose":
-                    itemDetail = waitrose.getProduct(item.get("productId"))
+                    itemDetail = waitrose.get_product(item.get("productId"))
                 case "Morrisons":
-                    itemDetail = morrisons.getProduct(item.get("productId"))
+                    itemDetail = morrisons.get_product(item.get("productId"))
                 case _:
                     print ("Something's wrong")
             # print(itemDetail)
@@ -62,7 +62,7 @@ def main():
 
 
     # print(products)
-    sendReport(products)
+    send_report(products)
 
  
 if __name__ == "__main__":

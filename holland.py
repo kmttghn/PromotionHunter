@@ -1,6 +1,6 @@
 import requests
 import logging
-import re
+import utils
 from bs4 import BeautifulSoup
 
 class Holland():
@@ -36,33 +36,27 @@ class Holland():
         # print(data)     
         return data
     
-    def textToFloat(self, text):
-        if text:
-            extract = re.search(r"(\d+\.?\d*)", text)
-            return float(extract.group()) if extract else None
-        return
-    
-    def soupToText(self, soup):
+    def soup_to_text(self, soup):
         if soup:
             return soup.get_text(" ", strip=True)
         return
     
-    def getProduct(self, productId):
+    def get_product(self, productId):
         path = f"shop/product/{productId}"
 
         response = self._request_wrapper("GET", path, "")
         soup = BeautifulSoup(response, "html.parser")
-        title = self.soupToText(soup.css.select_one("h1[class*='ProductHeaderUI-module_title']"))
-        original_price = self.textToFloat(self.soupToText(soup.css.select_one("p[class*='wasPrice']")))
+        title = self.soup_to_text(soup.css.select_one("h1[class*='ProductHeaderUI-module_title']"))
+        original_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("p[class*='wasPrice']")))
         if original_price:
             price = original_price
             unit_price = None
-            offer_price = self.textToFloat(self.soupToText(soup.css.select_one("p[class*='nowPrice']")))
-            offer_unit_price = self.soupToText(soup.css.select_one("p[class*='pricePerUom']"))
-            offer_term = self.soupToText(soup.css.select_one("a[class*='PromoFlag-module_flag']"))
+            offer_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("p[class*='nowPrice']")))
+            offer_unit_price = self.soup_to_text(soup.css.select_one("p[class*='pricePerUom']"))
+            offer_term = self.soup_to_text(soup.css.select_one("a[class*='PromoFlag-module_flag']"))
         else:
-            price = self.textToFloat(self.soupToText(soup.css.select_one("p[class*='nowPrice']")))
-            unit_price = self.soupToText(soup.css.select_one("p[class*='pricePerUom']"))
+            price = utils.text_to_float(self.soup_to_text(soup.css.select_one("p[class*='nowPrice']")))
+            unit_price = self.soup_to_text(soup.css.select_one("p[class*='pricePerUom']"))
             offer_price = None
             offer_unit_price = None
             offer_term = None
@@ -90,6 +84,5 @@ if __name__ == "__main__":
         format="%(asctime)s %(message)s", datefmt="%Y/%m/%d %H:%M:%S"
     )
     holland = Holland()
-    print(holland.getProduct("aspall-raw-organic-unfiltered-cyder-vinegar-60011461"))
-    # print(holland.getProduct("brains-pure-cbd-turmeric-28-capsules-6100000620"))
+    print(holland.get_product("aspall-raw-organic-unfiltered-cyder-vinegar-60011461"))
 

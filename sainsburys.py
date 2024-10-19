@@ -1,7 +1,5 @@
 import requests
 import logging
-# import re
-# from bs4 import BeautifulSoup
 import collections
 
 class Sainsburys():
@@ -18,7 +16,7 @@ class Sainsburys():
         self.session.headers = collections.OrderedDict(
             ((key, value) for key, value in sorted(self.session.headers.items()))
         )
-        self.initCookie()
+        self._init_cookie()
 
     def _request_wrapper(self, method, path, body):
         url = self.base_url + path
@@ -53,13 +51,13 @@ class Sainsburys():
             return data
         return
 
-    def initCookie(self):   
+    def _init_cookie(self):   
         path = f""
         response = self._request_wrapper("GET", path, "")
     
         return
             
-    def getProduct(self, productId):
+    def get_product(self, productId):
         path = f"groceries-api/gol-services/product/v1/product?filter[product_seo_url]=gb%2Fgroceries%2F{productId}"
 
         response = self._request_wrapper("GET", path, "")
@@ -101,6 +99,5 @@ if __name__ == "__main__":
         format="%(asctime)s %(message)s", datefmt="%Y/%m/%d %H:%M:%S"
     )
     sains = Sainsburys()
-    print(sains.getProduct("aspall-raw-cyder-vinegar--organic-500ml"))
-    # print(sains.getProduct("alpro-blueberry-cherry-yogurt-alternative-4x125g"))
+    print(sains.get_product("aspall-raw-cyder-vinegar--organic-500ml"))
 

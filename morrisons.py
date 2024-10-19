@@ -1,6 +1,6 @@
 import requests
 import logging
-import re
+import utils
 from bs4 import BeautifulSoup
 
 class Morrisons():
@@ -36,33 +36,27 @@ class Morrisons():
         # print(data)     
         return data
     
-    def textToFloat(self, text):
-        if text:
-            extract = re.search(r"(\d+\.?\d*)", text)
-            return float(extract.group()) if extract else None
-        return
-    
-    def soupToText(self, soup):
+    def soup_to_text(self, soup):
         if soup:
             return soup.get_text(" ", strip=True)
         return
     
-    def getProduct(self, productId):
+    def get_product(self, productId):
         path = f"products/{productId}"
 
         response = self._request_wrapper("GET", path, "")
         soup = BeautifulSoup(response, "html.parser")
-        title = self.soupToText(soup.css.select_one("header[class='bop-title'] h1"))
-        original_price = self.textToFloat(self.soupToText(soup.css.select_one("span[class*='bop-price__old']")))
+        title = self.soup_to_text(soup.css.select_one("header[class='bop-title'] h1"))
+        original_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("span[class*='bop-price__old']")))
         if original_price:
             price = original_price
             unit_price = None
-            offer_price = self.textToFloat(self.soupToText(soup.css.select_one("h2[class~='bop-price__current']")))
-            offer_unit_price = self.soupToText(soup.css.select_one("span[class='bop-price__per']"))
+            offer_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("h2[class~='bop-price__current']")))
+            offer_unit_price = self.soup_to_text(soup.css.select_one("span[class='bop-price__per']"))
             offer_term = None
         else:
-            price = self.textToFloat(self.soupToText(soup.css.select_one("h2[class~='bop-price__current']")))
-            unit_price = self.soupToText(soup.css.select_one("span[class='bop-price__per']"))
+            price = utils.text_to_float(self.soup_to_text(soup.css.select_one("h2[class~='bop-price__current']")))
+            unit_price = self.soup_to_text(soup.css.select_one("span[class='bop-price__per']"))
             offer_price = None
             offer_unit_price = None
             offer_term = None
@@ -90,8 +84,6 @@ if __name__ == "__main__":
         format="%(asctime)s %(message)s", datefmt="%Y/%m/%d %H:%M:%S"
     )
     morrisons = Morrisons()
-    # print(morrisons.getProduct("aspall-raw-organic-apple-cyder-vinegar-431504011"))
-    print(morrisons.getProduct("beavertown-neck-oil-session-ipa-621747011"))
-    # print(morrisons.getProduct("kleenex-balsam-tissues-2-pack-372613011"))
+    print(morrisons.get_product("beavertown-neck-oil-session-ipa-621747011"))
 
 

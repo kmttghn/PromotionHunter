@@ -49,33 +49,33 @@ class Waitrose():
         # print(data)     
         return data
     
-    def textToFloat(self, text):
+    def text_to_float(self, text):
         if text:
             extract = re.search(r"(\d+\.?\d*)", text)
             return float(extract.group()) if extract else None
         return
     
-    def soupToText(self, soup):
+    def soup_to_text(self, soup):
         if soup:
             return soup.get_text(" ", strip=True)
         return
     
-    def getProduct(self, productId):
+    def get_product(self, productId):
         path = f"ecom/products/{productId}"
 
         response = self._request_wrapper("GET", path, "")
         soup = BeautifulSoup(response, "html.parser")
-        title = self.soupToText(soup.css.select_one("h1[id='productName']"))
-        original_price = self.textToFloat(self.soupToText(soup.css.select_one("span[class*='offerDescription'] em")))
+        title = self.soup_to_text(soup.css.select_one("h1[id='productName']"))
+        original_price = self.text_to_float(self.soup_to_text(soup.css.select_one("span[class*='offerDescription'] em")))
         if original_price:
             price = original_price
             unit_price = None
-            offer_price = self.textToFloat(self.soupToText(soup.css.select_one("span[data-test='product-pod-price']")))
-            offer_unit_price = self.soupToText(soup.css.select_one("span[class*='pricePerUnit']"))
+            offer_price = self.text_to_float(self.soup_to_text(soup.css.select_one("span[data-test='product-pod-price']")))
+            offer_unit_price = self.soup_to_text(soup.css.select_one("span[class*='pricePerUnit']"))
             offer_term = None
         else:
-            price = self.textToFloat(self.soupToText(soup.css.select_one("span[data-test='product-pod-price']")))
-            unit_price = self.soupToText(soup.css.select_one("span[class*='pricePerUnit']"))
+            price = self.text_to_float(self.soup_to_text(soup.css.select_one("span[data-test='product-pod-price']")))
+            unit_price = self.soup_to_text(soup.css.select_one("span[class*='pricePerUnit']"))
             offer_price = None
             offer_unit_price = None
             offer_term = None
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     )
     waitrose = Waitrose()
     
-    print(waitrose.getProduct("aspall-raw-organic-cyder-vinegar/626811-535366-535367"))
+    print(waitrose.get_product("aspall-raw-organic-cyder-vinegar/626811-535366-535367"))
     # print(waitrose.getProduct("aspall-apple-cyder-vinegar-with-honey/563078-680123-680124"))
 
 

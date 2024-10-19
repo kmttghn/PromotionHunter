@@ -1,6 +1,6 @@
 import requests
 import logging
-import re
+import utils
 from bs4 import BeautifulSoup
 
 
@@ -17,7 +17,7 @@ class Tesco:
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
             }
         )
-        # self.initCookie() -- It seems no longer needed
+        # self._init_cookie() -- It seems no longer needed
 
     def _request_wrapper(self, method, path, body):
         url = self.base_url + path
@@ -58,52 +58,46 @@ class Tesco:
 
         return data
 
-    def initCookie(self):
-        path = f"groceries/en-GB/products/"
-        response = self._request_wrapper("GET", path, "")
-        # extract `i`, `j` and `bm-verify`
-        i = re.search(rb"var i = (\d+)", response)[1]
-        j = re.search(rb'var j = i [+] Number[(]"(\d+)" [+] "(\d+)"[)]', response)
-        j = j[1] + j[2]
-        payload = {
-            "bm-verify": re.search(rb'"bm-verify"\s*:\s*"([^"]+)', response)[
-                1
-            ].decode(),
-            "pow": int(i) + int(j),
-        }
-        # print(f"Payload: {payload}")
+    # def _init_cookie(self):
+    #     path = f"groceries/en-GB/products/"
+    #     response = self._request_wrapper("GET", path, "")
+    #     # extract `i`, `j` and `bm-verify`
+    #     i = re.search(rb"var i = (\d+)", response)[1]
+    #     j = re.search(rb'var j = i [+] Number[(]"(\d+)" [+] "(\d+)"[)]', response)
+    #     j = j[1] + j[2]
+    #     payload = {
+    #         "bm-verify": re.search(rb'"bm-verify"\s*:\s*"([^"]+)', response)[
+    #             1
+    #         ].decode(),
+    #         "pow": int(i) + int(j),
+    #     }
+    #     # print(f"Payload: {payload}")
 
-        path = f"_sec/verify?provider=interstitial"
-        response = self._request_wrapper("POST", path, payload)
-        return
+    #     path = f"_sec/verify?provider=interstitial"
+    #     response = self._request_wrapper("POST", path, payload)
+    #     return
 
-    def textToFloat(self, text):
-        if text:
-            extract = re.search(r"(\d+\.?\d*)", text)
-            return float(extract.group()) if extract else None
-        return
-
-    def soupToText(self, soup):
+    def soup_to_text(self, soup):
         if soup:
             return soup.get_text(" ", strip=True)
         return
 
-    def getProduct(self, productId):
+    def get_product(self, productId):
         path = f"groceries/en-GB/products/{productId}"
 
         response = self._request_wrapper("GET", path, "")
         soup = BeautifulSoup(response, "html.parser")
 
-        title = self.soupToText(soup.css.select_one("h1[class*='ProductTitle']"))
-        price = self.textToFloat(
-            self.soupToText(soup.css.select_one("p[class*='PriceText']"))
+        title = self.soup_to_text(soup.css.select_one("h1[class*='ProductTitle']"))
+        price = utils.text_to_float(
+            self.soup_to_text(soup.css.select_one("p[class*='PriceText']"))
         )
-        unit_price = self.soupToText(soup.css.select_one("p[class*='Subtext']"))
-        offer_price = self.textToFloat(
-            self.soupToText(soup.css.select_one("div[class*='PromotionsContainer'] p[class*='ContentText']"))
+        unit_price = self.soup_to_text(soup.css.select_one("p[class*='Subtext']"))
+        offer_price = utils.text_to_float(
+            self.soup_to_text(soup.css.select_one("div[class*='PromotionsContainer'] p[class*='ContentText']"))
         )
-        offer_unit_price = self.soupToText(soup.css.select_one("div[class*='PromotionsContainer'] p[class*='SubText']"))
-        offer_term = self.soupToText(soup.css.select_one("div[class*='PromotionsContainer'] p[class*='TermsText']"))
+        offer_unit_price = self.soup_to_text(soup.css.select_one("div[class*='PromotionsContainer'] p[class*='SubText']"))
+        offer_term = self.soup_to_text(soup.css.select_one("div[class*='PromotionsContainer'] p[class*='TermsText']"))
         item = {
             "title": title,
             "price": price,
@@ -127,5 +121,5 @@ if __name__ == "__main__":
     )
     tesco = Tesco()
     # print(tesco.getProduct("297105301"))
-    print(tesco.getProduct("311680104"))
+    print(tesco.get_product("311680104"))
     # tesco.getProduct("313855828")
