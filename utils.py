@@ -1,6 +1,6 @@
 import re
 
-def text_to_float(self, text):
+def text_to_float(text):
     """
     Find numeric text and returns as float
 
