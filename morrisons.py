@@ -57,17 +57,18 @@ class Morrisons():
 
         response = self._request_wrapper("GET", path, "")
         soup = BeautifulSoup(response, "html.parser")
-        title = self.soup_to_text(soup.css.select_one("header[class='bop-title'] h1"))
-        original_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("span[class*='bop-price__old']")))
+
+        title = self.soup_to_text(soup.css.select_one("h1[class~='sc-q2s63n-0']"))
+        original_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("div[data-test*='price-container'] span[data-test*='bop-price-original']")))
         if original_price:
             price = original_price
             unit_price = None
-            offer_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("h2[class~='bop-price__current']")))
-            offer_unit_price = self.soup_to_text(soup.css.select_one("span[class='bop-price__per']"))
-            offer_term = None
+            offer_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("div[data-test*='price-container'] span[class*='display--promotion']")))
+            offer_unit_price = self.soup_to_text(soup.css.select_one("div[data-test*='size-container'] span[class*='salt-vc']"))
+            offer_term = self.soup_to_text(soup.css.select_one("div[class*='gmMoNa'] span:last-child"))
         else:
-            price = utils.text_to_float(self.soup_to_text(soup.css.select_one("h2[class~='bop-price__current']")))
-            unit_price = self.soup_to_text(soup.css.select_one("span[class='bop-price__per']"))
+            price = utils.text_to_float(self.soup_to_text(soup.css.select_one("div[data-test*='price-container'] span[class*='display--s']")))
+            unit_price = self.soup_to_text(soup.css.select_one("div[data-test*='size-container'] span[class*='salt-vc']"))
             offer_price = None
             offer_unit_price = None
             offer_term = None
@@ -96,5 +97,6 @@ if __name__ == "__main__":
     )
     morrisons = Morrisons()
     print(morrisons.get_product("beavertown-neck-oil-session-ipa-621747011"))
-
+    print(morrisons.get_product("aspall-raw-organic-apple-cyder-vinegar-431504011"))
+    
 

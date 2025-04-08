@@ -1,6 +1,7 @@
 import requests
 import logging
 import utils
+import json
 from bs4 import BeautifulSoup
 
 class Holland():
@@ -46,20 +47,25 @@ class Holland():
 
         response = self._request_wrapper("GET", path, "")
         soup = BeautifulSoup(response, "html.parser")
-        title = self.soup_to_text(soup.css.select_one("h1[class*='ProductHeaderUI-module_title']"))
-        original_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("p[class*='wasPrice']")))
-        if original_price:
-            price = original_price
-            unit_price = None
-            offer_price = utils.text_to_float(self.soup_to_text(soup.css.select_one("p[class*='nowPrice']")))
-            offer_unit_price = self.soup_to_text(soup.css.select_one("p[class*='pricePerUom']"))
-            offer_term = self.soup_to_text(soup.css.select_one("a[class*='PromoFlag-module_flag']"))
-        else:
-            price = utils.text_to_float(self.soup_to_text(soup.css.select_one("p[class*='nowPrice']")))
-            unit_price = self.soup_to_text(soup.css.select_one("p[class*='pricePerUom']"))
-            offer_price = None
-            offer_unit_price = None
-            offer_term = None
+
+        sp = soup.css.select_one("script#__LAYOUT__")
+        if sp:
+            product_data = json.loads(sp.text)["resolveParamValues"]["7251734e-0355-43f8-aa7f-79e58b318ab4"]["data"]
+
+            title = product_data.get("title") 
+            original_price = utils.text_to_float(product_data["price"].get("preSalePrice"))
+            if original_price:
+                price = original_price
+                unit_price = None
+                offer_price = utils.text_to_float(product_data["price"].get("price"))
+                offer_unit_price = product_data["price"].get("pricePerUom")
+                offer_term = product_data["promos"][0].get("text")
+            else:
+                price = utils.text_to_float(product_data["price"].get("price"))
+                unit_price = product_data["price"].get("pricePerUom")
+                offer_price = None
+                offer_unit_price = None
+                offer_term = None
         item = {
             "title": title,
             "price": price,
@@ -85,4 +91,6 @@ if __name__ == "__main__":
     )
     holland = Holland()
     print(holland.get_product("aspall-raw-organic-unfiltered-cyder-vinegar-60011461"))
+    print(holland.get_product("applied-nutrition-marine-collagen-strawberry-raspberry-300g-6100003873"))
+    
 
