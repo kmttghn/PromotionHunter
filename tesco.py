@@ -10,11 +10,10 @@ class Tesco:
         self.session = requests.Session()
         self.session.headers.update(
             { #The alphabetical order of header items seem to avoid bot detection
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Accept-Language": "en-GB,en;q=0.9",
-                "Referer": "https://www.tesco.com/",
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
+                "Accept": "*/*",
+                # "Accept-Encoding": "gzip, deflate, br",
+                # "Accept-Language": "en-GB,en;q=0.9",
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Safari/605.1.15"
             }
         )
         # self._init_cookie() -- It seems no longer needed
